@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LedHoodie-Feather/FeatherLedHoodie.csproj" />
+  <Project Path="LedHoodie-ProjectLab/ProjectLabLedHoodie.csproj" />
+</Solution>
