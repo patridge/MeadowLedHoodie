@@ -1,9 +1,7 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Graphics;
-using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.Leds;
-using Meadow.Peripherals.Displays;
 using Meadow.Units;
 using System;
 using System.Collections.Generic;
