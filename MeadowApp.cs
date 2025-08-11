@@ -16,7 +16,6 @@ public class MeadowApp : App<F7CoreComputeV2>
 {
     IProjectLabHardware? projLab;
     MicroGraphics? graphics;
-    // IBadgePage? ledStripPage = new LedStripPage();
 
     public bool IsUpdating = false;
 
@@ -47,7 +46,6 @@ public class MeadowApp : App<F7CoreComputeV2>
         projLab.UpButton!.Clicked += ButtonUp_Clicked;
 
         projLab.RgbLed!.SetColor(Color.Green);
-        // ledStripPage!.Init(projLab);
 
         // NOTE: On Project Lab, MikroBus2 shares the SPI bus with the display. Using the display can cause strip to display some unexpected colors on some LEDs.
         apa102 = new Apa102(projLab.MikroBus1.SpiBus, numberOfLeds, Apa102.PixelOrder.BGR);
@@ -67,15 +65,14 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         Resolver.Log.Info("Run...");
 
-        // Start updating LED strip (page[0])
-        // ledStripPage!.StartUpdating(projLab!, graphics!);
+        StartUpdating();
+
+        return Task.CompletedTask;
+    }
+
+    private void StartUpdating()
+    {
         IsUpdating = true;
-
-        // graphics.Clear();
-        // graphics.Show();
-
-        // // TODO: Any display while running LED strip.
-        // graphics.Show();
 
         DrawLights(currentDisplay!);
         _ = Task.Run(async () =>
@@ -86,14 +83,9 @@ public class MeadowApp : App<F7CoreComputeV2>
                 await Task.Delay(1000).ConfigureAwait(false);
             }
         });
-
-        return Task.CompletedTask;
     }
-
-    private void ButtonUp_Clicked(object sender, EventArgs e)
+    private void StopUpdating()
     {
-        // ledStripPage!.Up();
-
         if (clearStripOnDoneUpdating)
         {
             apa102?.Clear();
@@ -102,24 +94,34 @@ public class MeadowApp : App<F7CoreComputeV2>
         IsUpdating = false;
     }
 
+    private void ButtonUp_Clicked(object sender, EventArgs e)
+    {
+        if (IsUpdating)
+        {
+            Resolver.Log.Info("ButtonUp_Clicked: Stopping updates.");
+            StopUpdating();
+        }
+        else
+        {
+            Resolver.Log.Info("ButtonUp_Clicked: Starting updates.");
+            StartUpdating();
+        }
+    }
+
     private void ButtonDown_Clicked(object sender, EventArgs e)
     {
-        // ledStripPage!.Down();
     }
 
     private void ButtonRight_Clicked(object sender, EventArgs e)
     {
-        // ledStripPage!.Right();
     }
 
     private void ButtonLeft_Clicked(object sender, EventArgs e)
     {
-        // ledStripPage!.Left();
     }
 
     private void OnAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e) {
         // Resolver.Log.Info($"Accel Gravity: {e.New.X.Gravity}, {e.New.Y.Gravity}, {e.New.Z.Gravity}g");
-
         var gravityAngle = new Vector3(
             (float) e.New.X.Gravity,
             (float) e.New.Y.Gravity,
