@@ -1,0 +1,22 @@
+<Project Sdk="Meadow.Sdk/1.1.0">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>12.0</LangVersion>
+        <OutputType>Library</OutputType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <!-- <PackageIcon>icon.png</PackageIcon> -->
+        <Authors>Adam Patridge</Authors>
+        <Company>PatridgeDev, LLC</Company>
+        <AssemblyName>LedHoodieCommon</AssemblyName>
+        <!-- <PackageProjectUrl>https://github.com/patridge/MeadowLedHoodie</PackageProjectUrl> -->
+        <!-- <PackageId>PatridgeDev.LedHoodie.LedHoodieCommon</PackageId> -->
+        <RepositoryUrl>https://github.com/patridge/MeadowLedHoodie</RepositoryUrl>
+        <!-- <PackageTags>Meadow</PackageTags> -->
+        <!-- <GeneratePackageOnBuild>true</GeneratePackageOnBuild> -->
+        <!-- <Description>MeadowLedHoodie project shared code.</Description> -->
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Meadow" Version="2.3.0.2-beta" />
+    </ItemGroup>
+</Project>
