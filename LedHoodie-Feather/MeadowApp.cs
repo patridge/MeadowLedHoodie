@@ -16,7 +16,7 @@ public class MeadowApp : App<F7FeatherV2>
     RgbPwmLed? onboardLed;
     Apa102? apa102;
     const int numberOfLeds = 51; // longer, high-density strand
-    //const int numberOfLeds = 15; // short strand
+    // const int numberOfLeds = 15; // short strand
     float MaxBrightness { get; set; } = 0.05f;
     // float tiltAngleThreshold = 0.25f;
     readonly TimeSpan sensorUpdateTime = TimeSpan.FromMilliseconds(100);
