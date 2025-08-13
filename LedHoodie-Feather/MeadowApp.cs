@@ -82,7 +82,7 @@ public class MeadowApp : App<F7FeatherV2>
         IsUpdating = false;
     }
     
-        long priorDTNTicks = DateTime.Now.Ticks;
+    long priorDTNTicks = DateTime.Now.Ticks;
     // long priorEnvTickCount = Environment.TickCount;
     void DrawLights(ILedDisplay ledDisplay)
     {
