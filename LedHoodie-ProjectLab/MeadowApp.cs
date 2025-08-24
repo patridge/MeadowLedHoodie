@@ -145,11 +145,11 @@ public class MeadowApp : App<F7CoreComputeV2>
         }
     }
     
-    long priorDTNTicks = DateTime.Now.Ticks;
+    long priorDTNTicks = DateTime.UtcNow.Ticks;
     // long priorEnvTickCount = Environment.TickCount;
     void DrawLights(ILedDisplay ledDisplay)
     {
-        long currentDTNTicks = DateTime.Now.Ticks;
+        long currentDTNTicks = DateTime.UtcNow.Ticks;
         // long currentEnvTickCount = Environment.TickCount;
         long ticksElapsed = currentDTNTicks - priorDTNTicks;
         Resolver.Log.Info($"DT.N.Ticks Delta: {(ticksElapsed) / TimeSpan.TicksPerMillisecond}ms");

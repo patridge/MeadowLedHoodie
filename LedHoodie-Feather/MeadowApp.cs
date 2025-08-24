@@ -3,6 +3,7 @@ using Meadow.Devices;
 using Meadow.Foundation.Leds;
 using Meadow.Peripherals.Leds;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LedHoodiesCommon;
@@ -11,8 +12,6 @@ namespace FeatherLedHoodie;
 
 public class MeadowApp : App<F7FeatherV2>
 {
-    public bool IsUpdating = false;
-
     RgbPwmLed? onboardLed;
     Apa102? apa102;
     const int numberOfLeds = 51; // longer, high-density strand
@@ -58,56 +57,69 @@ public class MeadowApp : App<F7FeatherV2>
         return base.Initialize();
     }
 
+    CancellationTokenSource latestCancellationTokenSource = new CancellationTokenSource();
+    CancellationToken updatingCancellationToken;
     private void StartUpdating()
     {
-        IsUpdating = true;
+        updatingCancellationToken = latestCancellationTokenSource.Token;
+        StartDrawingLights(currentDisplay!, updatingCancellationToken);
 
-        DrawLights(currentDisplay!);
-        _ = Task.Run(async () =>
-        {
-            while (IsUpdating)
-            {
-                DrawLights(currentDisplay!);
-                await Task.Delay(1000).ConfigureAwait(false);
-            }
-        });
+        // // TODO: Convert to calling DrawLights every chance we can with elapsed time. Let the consuming ILedDisplay decide when to change accordingly.
+        // StartDrawingLights(currentDisplay!);
+        // _ = Task.Run(async () =>
+        // {
+        //     while (IsUpdating)
+        //     {
+        //         DrawLights(currentDisplay!);
+        //         await Task.Delay(1000).ConfigureAwait(false);
+        //     }
+        // });
     }
     private void StopUpdating()
+    {
+        latestCancellationTokenSource.Cancel();
+        latestCancellationTokenSource = new CancellationTokenSource();
+    }
+
+    class OneFPSLedDisplay : ILedDisplay
+    {
+        public OneFPSLedDisplay(int numberOfLeds, float maxBrightness)
+        {
+            NumberOfLeds = numberOfLeds;
+            MaxBrightness = maxBrightness;
+        }
+
+        public int NumberOfLeds { get; set; }
+        public float MaxBrightness { get; set; }
+
+        public void DrawDisplay(Apa102 apa102, long _)
+        {
+            Resolver.Log.Info($"DrawDisplay: OneFPSLedDisplay");
+            var rand = new Random();
+            apa102.Clear();
+            for (int i = 0; i < apa102.NumberOfLeds; i++) {
+                apa102.SetLed(i, ColorHelpers.GetRandomColor(rand), brightness: MaxBrightness);
+            }
+            apa102.Show();
+        }
+    }
+    
+    void StartDrawingLights(ILedDisplay ledDisplay, CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            ledDisplay.DrawDisplay(apa102!, DateTime.UtcNow.Ticks);
+            // TODO: Determine if we need any sleep throttling here.
+            // Thread.Sleep(20);
+        }
+    }
+    void StopDisplayingLights()
     {
         if (clearStripOnDoneUpdating)
         {
             apa102?.Clear();
             apa102?.Show();
         }
-        IsUpdating = false;
-    }
-    
-    long priorDTNTicks = DateTime.Now.Ticks;
-    // long priorEnvTickCount = Environment.TickCount;
-    void DrawLights(ILedDisplay ledDisplay)
-    {
-        long currentDTNTicks = DateTime.Now.Ticks;
-        // long currentEnvTickCount = Environment.TickCount;
-        long ticksElapsed = currentDTNTicks - priorDTNTicks;
-        Resolver.Log.Info($"DT.N.Ticks Delta: {(ticksElapsed) / TimeSpan.TicksPerMillisecond}ms");
-        // Resolver.Log.Info($"Env.TickCount Delta: {(currentEnvTickCount - priorEnvTickCount) / TimeSpan.TicksPerMillisecond}ms");
-        priorDTNTicks = currentDTNTicks;
-        // priorEnvTickCount = currentEnvTickCount;
-
-        // Resolver.Log.Info((ledDisplay as SnakeDisplay)!.ToString(apa102!.NumberOfLeds));
-        ledDisplay.DrawDisplay(apa102!, ticksElapsed);
-        // // Resolver.Log.Trace($"ShowCursor: {cursorLocation}");
-        // apa102!.Clear();
-        // // apa102.SetLed(cursorLocation, cursorColor);
-        // for (int i = 0; i < numberOfLeds; i++)
-        // {
-        //     // var brightness = ledDisplay.GetLedBrightness(i - cursorLocation);
-        //     // apa102.SetLed(i, cursorColor, brightness);
-        //     var color = snakeDisplay.GetLedColor(i);
-        //     var brightness = snakeDisplay.GetLedBrightness(i);
-        //     apa102.SetLed(i, color, brightness);
-        // }
-        // apa102.Show();
     }
 
     class TimedCalculationBasedDisplay : ILedDisplay
