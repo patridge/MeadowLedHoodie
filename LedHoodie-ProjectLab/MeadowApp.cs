@@ -132,16 +132,16 @@ public class MeadowApp : App<F7CoreComputeV2>
             // cursorLocation += 1;
             // if (cursorLocation >= numberOfLeds) { cursorLocation = numberOfLeds - 1; }
             // DrawLights(ledDisplay);
-            currentDisplay!.MoveRight();
-            DrawLights(currentDisplay);
+            // currentDisplay!.MoveRight();
+            // DrawLights(currentDisplay);
         }
         else if (gravityAngle.Y < -tiltAngleThreshold)
         {
             // cursorLocation -= 1;
             // if (cursorLocation < 0) { cursorLocation = 0; }
             // DrawLights(ledDisplay);
-            currentDisplay!.MoveLeft();
-            DrawLights(currentDisplay);
+            // currentDisplay!.MoveLeft();
+            // DrawLights(currentDisplay);
         }
     }
     
@@ -184,14 +184,6 @@ public class MeadowApp : App<F7CoreComputeV2>
         public int NumberOfLeds { get; set; }
         public float MaxBrightness { get; set; }
 
-        public void MoveLeft()
-        {
-            // Static display doesn't move.
-        }
-        public void MoveRight()
-        {
-            // Static display doesn't move.
-        }
         public void DrawDisplay(Apa102 apa102, long ticksElapsed)
         {
             Resolver.Log.Info($"DrawDisplay: TimedCalculationBasedDisplay");
@@ -219,14 +211,6 @@ public class MeadowApp : App<F7CoreComputeV2>
         public int NumberOfLeds { get; set; }
         public float MaxBrightness { get; set; }
 
-        public void MoveLeft()
-        {
-            // Static display doesn't move.
-        }
-        public void MoveRight()
-        {
-            // Static display doesn't move.
-        }
         public void DrawDisplay(Apa102 apa102, long _)
         {
             var randomColor = ColorHelpers.GetRandomColor(rand);
@@ -249,14 +233,6 @@ public class MeadowApp : App<F7CoreComputeV2>
         public int NumberOfLeds { get; set; }
         public float MaxBrightness { get; set; }
 
-        public void MoveLeft()
-        {
-            // Static display doesn't move.
-        }
-        public void MoveRight()
-        {
-            // Static display doesn't move.
-        }
         public void DrawDisplay(Apa102 apa102, long _)
         {
             Resolver.Log.Info($"DrawDisplay: RandomVariationStaticDisplay");
@@ -282,14 +258,6 @@ public class MeadowApp : App<F7CoreComputeV2>
         public int NumberOfLeds { get; set; }
         public float MaxBrightness { get; set; }
 
-        public void MoveLeft()
-        {
-            // Static display doesn't move.
-        }
-        public void MoveRight()
-        {
-            // Static display doesn't move.
-        }
         public void DrawDisplay(Apa102 apa102, long _)
         {
             Resolver.Log.Info($"DrawDisplay: StaticDisplay");
@@ -301,7 +269,7 @@ public class MeadowApp : App<F7CoreComputeV2>
             apa102.Show();
         }
     }
-    class SnakeDisplay : ILedDisplay
+    class SnakeDisplay : ILedDisplay, IEventXYTiltDisplay
     {
         int BodyLength { get; set; }
         public Color SnakeColor { get; set; }
